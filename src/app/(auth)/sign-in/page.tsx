@@ -2,11 +2,14 @@
 import React from 'react';
 
 import { Button, Description, FieldError, Form, Input, Label, TextField } from "@heroui/react";
-
+import { signIn } from '@/lib/auth-client';
+import { FcGoogle } from "react-icons/fc";
+import { FaGithub } from "react-icons/fa";
+import Link from "next/link";
 
 
 const SignIn = () => {
-    const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         const formData = new FormData(e.currentTarget);
         const data: Record<string, string> = {};
@@ -14,8 +17,15 @@ const SignIn = () => {
         formData.forEach((value, key) => {
             data[key] = value.toString();
         });
-        alert(`Form submitted with: ${JSON.stringify(data, null, 2)}`);
+
+        const { data: signInData, error } = await signIn.email({
+            email: data.email,
+            password: data.password,
+            rememberMe: true,
+            callbackURL: "/",
+        });
     };
+
     return (
         <div className="min-h-screen bg-[#f2f7f3] px-4 py-8 font-bengali sm:px-6">
             <Form className="flex min-h-[calc(100vh-4rem)] flex-col items-center justify-center" onSubmit={onSubmit}>
@@ -149,108 +159,51 @@ const SignIn = () => {
                         <div className="h-px flex-1 bg-gray-200" />
                     </div>
 
-                    {/* Social Buttons */}
-                    <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-
-
+                    {/* Social Login */}
+                    <div className="grid grid-cols-2 gap-2">
                         <Button
                             type="button"
-                            className="
-              flex
-              h-10
-              w-full
-              items-center
-              justify-center
-              gap-2
-              rounded-md
-              border
-              border-gray-200
-              bg-white
-              px-2
-              text-[11px]
-              font-medium
-              text-gray-700
-              transition
-              hover:bg-gray-50
-            "
+                            className="h-8 rounded-sm border border-gray-200 bg-white text-[10px] text-gray-700 hover:bg-gray-50"
                         >
-                            <svg
-                                width="15"
-                                height="15"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                aria-hidden="true"
-                            >
-                                <path
-                                    d="M21.35 12.27c0-.79-.07-1.55-.2-2.27H12v4.3h5.22a4.46 4.46 0 0 1-1.94 2.93v2.44h3.14c1.84-1.69 2.93-4.18 2.93-7.4Z"
-                                    fill="#4285F4"
-                                />
-                                <path
-                                    d="M12 21.9c2.63 0 4.84-.87 6.45-2.36l-3.14-2.44c-.87.58-1.98.92-3.31.92-2.54 0-4.69-1.72-5.46-4.03H3.3v2.52A9.75 9.75 0 0 0 12 21.9Z"
-                                    fill="#34A853"
-                                />
-                                <path
-                                    d="M6.54 13.99a5.86 5.86 0 0 1 0-3.75V7.72H3.3a9.75 9.75 0 0 0 0 8.79l3.24-2.52Z"
-                                    fill="#FBBC05"
-                                />
-                                <path
-                                    d="M12 6.2c1.43 0 2.71.49 3.72 1.46l2.79-2.79C16.83 3.3 14.63 2.4 12 2.4a9.75 9.75 0 0 0-8.7 5.32l3.24 2.52C7.31 7.93 9.46 6.2 12 6.2Z"
-                                    fill="#EA4335"
-                                />
-                            </svg>
 
+                            <FcGoogle className="mr-2" />
                             Google দিয়ে চালিয়ে যান
                         </Button>
+
                         <Button
                             type="button"
-                            className="
-              flex
-              h-10
-              w-full
-              items-center
-              justify-center
-              gap-2
-              rounded-md
-              border
-              border-gray-200
-              bg-white
-              px-2
-              text-[11px]
-              font-medium
-              text-gray-700
-              transition
-              hover:bg-gray-50
-            "
+                            className="h-8 rounded-sm border border-gray-200 bg-white text-[10px] text-gray-700 hover:bg-gray-50"
                         >
-                            <svg
-                                width="15"
-                                height="15"
-                                viewBox="0 0 24 24"
-                                fill="currentColor"
-                                aria-hidden="true"
-                            >
-                                <path d="M12 .5a12 12 0 0 0-3.79 23.39c.6.11.82-.26.82-.58v-2.04c-3.34.73-4.04-1.42-4.04-1.42-.55-1.4-1.33-1.77-1.33-1.77-1.09-.75.08-.74.08-.74 1.2.09 1.83 1.23 1.83 1.23 1.07 1.83 2.81 1.3 3.49.99.11-.78.42-1.3.76-1.6-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.23-3.22-.12-.3-.53-1.52.12-3.17 0 0 1-.32 3.3 1.23a11.5 11.5 0 0 1 6 0c2.3-1.55 3.3-1.23 3.3-1.23.65 1.65.24 2.87.12 3.17.76.84 1.23 1.91 1.23 3.22 0 4.61-2.8 5.62-5.48 5.92.43.37.81 1.1.81 2.22v3.29c0 .32.22.69.83.57A12 12 0 0 0 12 .5Z" />
-                            </svg>
 
+                            <FaGithub />
                             GitHub দিয়ে চালিয়ে যান
                         </Button>
-
-
-
-
-                        {/* Login */}
-                        <p className="mt-5 text-center text-[11px] text-gray-500">
-                            অ্যাকাউন্ট নেই?{" "}
-                            <a
-                                href="/signup"
-                                className="font-semibold text-green-700 hover:text-green-800 hover:underline"
-                            >
-                                সাইন আপ করুন
-                            </a>
-                        </p>
                     </div>
+
+
+                    {/* Login */}
+                    <p className="mt-5 text-center text-[11px] text-gray-500">
+                        অ্যাকাউন্ট নেই?{" "}
+                        <a
+                            href="/signup"
+                            className="font-semibold text-green-700 hover:text-green-800 hover:underline"
+                        >
+                            সাইন আপ করুন
+                        </a>
+                    </p>
                 </div>
-            </Form>
+        
+            </Form >
+             {/* Back to Home */}
+                        <div className=" text-center">
+                            <Link
+                                href="/"
+                                className="text-[10px] text-gray-400 hover:text-gray-600"
+                            >
+                                ← হোম পেজে ফিরে যান
+                            </Link>
+                        </div>
+            
 
         </div >
     );

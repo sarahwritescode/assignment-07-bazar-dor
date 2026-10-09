@@ -31,7 +31,7 @@ const SignUp = () => {
             window.alert("পাসওয়ার্ড দুটি মিলছে না");
             return;
         }
-
+console.log(data);
         const { data: signUpData, error } = await signUp.email({
             name: data.name,
             email: data.email,
@@ -103,7 +103,7 @@ const SignUp = () => {
                         {/* Confirm Password */}
                         <TextField
                             isRequired
-                            name="confirmPassword"
+                            name="password"
                             type="password"
                         />
                         <Label className="text-xs font-medium text-gray-700">
@@ -112,6 +112,8 @@ const SignUp = () => {
 
                         <div className="relative mt-1">
                             <Input
+                                type='password'
+                                name='confirmPassword'
                                 placeholder="আবার পাসওয়ার্ড লিখুন"
                                 className="h-9 w-full rounded-sm border border-gray-200 bg-white px-3 pr-10 text-xs outline-none focus:border-green-600"
                             />

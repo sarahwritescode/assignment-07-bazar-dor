@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 
 import { Hind_Siliguri } from "next/font/google";
-
+import Navbar from "./components/navbar";
 import "./globals.css";
 
 const hindSiliguri = Hind_Siliguri({
@@ -26,7 +27,12 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="en"
       className={`${hindSiliguri.className} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        <Suspense>
+          <Navbar />
+        </Suspense>
+        {children}
+      </body>
     </html>
   );
 }
