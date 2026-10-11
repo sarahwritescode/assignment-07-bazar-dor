@@ -1,20 +1,30 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { auth } from "./lib/auth";
-import { headers } from "next/headers";
 
-// This function can be marked `async` if using `await` inside
 export async function proxy(request: NextRequest) {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
+  try {
+    const session = await auth.api.getSession({
+      headers: request.headers,
+    });
 
-  const user = session?.user;
+    if (!session?.user) {
+      const signInUrl = new URL("/signin", request.url);
 
-  if (!user) {
+      signInUrl.searchParams.set(
+        "callbackUrl",
+        request.nextUrl.pathname + request.nextUrl.search
+      );
+
+      return NextResponse.redirect(signInUrl);
+    }
+
+    return NextResponse.next();
+  } catch (error) {
+    console.error("Authentication proxy error:", error);
+
     return NextResponse.redirect(new URL("/signin", request.url));
   }
-
 }
 
 export const config = {

@@ -1,6 +1,7 @@
 "use client";
 import React from 'react';
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { FcGoogle } from "react-icons/fc";
 import { FaGithub } from "react-icons/fa";
 import {
@@ -18,6 +19,7 @@ import {
 import { signUp } from '@/lib/auth-client';
 
 const SignUp = () => {
+  const router = useRouter();
     const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         const formData = new FormData(e.currentTarget);
@@ -31,8 +33,8 @@ const SignUp = () => {
             window.alert("পাসওয়ার্ড দুটি মিলছে না");
             return;
         }
-console.log(data);
-        const { data: signUpData, error } = await signUp.email({
+        const { data: signUpData, error } = await signUp.social({
+           provider: "google",
             name: data.name,
             email: data.email,
             password: data.password,
@@ -40,7 +42,7 @@ console.log(data);
             callbackURL: "/",
         });
 
-        console.log(signUpData, error);
+        router.push("/");
     };
 
     return (
