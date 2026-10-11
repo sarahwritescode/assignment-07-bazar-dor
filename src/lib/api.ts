@@ -1,6 +1,6 @@
 
 
-import type { Product } from "@/types/product";
+import type { Product } from "@/lib/utils";
 
 const API_BASE_URL = "https://api.abcz.workers.dev/api/bazardor";
 
