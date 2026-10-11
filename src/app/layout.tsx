@@ -1,9 +1,12 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 
+import Marquee from "./components/marquee";
 import { Hind_Siliguri } from "next/font/google";
 import Navbar from "./components/navbar";
 import "./globals.css";
+import { Toaster } from "react-hot-toast";
+import Footer from "./components/footer";
 
 const hindSiliguri = Hind_Siliguri({
   subsets: ["bengali", "latin"],
@@ -25,13 +28,24 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
+      data-theme="light"
       className={`${hindSiliguri.className} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
         <Suspense>
           <Navbar />
         </Suspense>
+        <Suspense
+  fallback={
+    <div className="h-10 animate-pulse bg-gray-100" />
+  }
+>
+  <Marquee />
+</Suspense>
         {children}
+         <Footer />
+        <Toaster position="top-center" reverseOrder={false} />
+
       </body>
     </html>
   );

@@ -1,7 +1,7 @@
 "use client";
 import React from 'react';
 
-import { Button, Description, FieldError, Form, Input, Label, TextField } from "@heroui/react";
+import { Button, FieldError, Form, Input, Label, TextField } from "@heroui/react";
 import { signIn } from '@/lib/auth-client';
 import { FcGoogle } from "react-icons/fc";
 import { FaGithub } from "react-icons/fa";
@@ -18,12 +18,16 @@ const SignIn = () => {
             data[key] = value.toString();
         });
 
-        const { data: signInData, error } = await signIn.email({
+        const result = await signIn.email({
             email: data.email,
             password: data.password,
             rememberMe: true,
             callbackURL: "/",
         });
+
+        if (result.error) {
+            console.error("Sign in failed:", result.error);
+        }
     };
 
     return (

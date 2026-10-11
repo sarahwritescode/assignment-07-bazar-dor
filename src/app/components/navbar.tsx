@@ -1,60 +1,133 @@
-import React from 'react';
-import NavLinks from './navlinks';
-import { Suspense } from 'react';
-import Image from 'next/image';
-import { connection } from "next/server";
-import Link from 'next/link';
 
+"use client";
 
-const Navbar = async () => {
-    await connection();
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useSession, authClient } from "@/lib/auth-client";
+import toast from "react-hot-toast";
 
-    const date = new Date().toLocaleDateString("bn-BD", {
-        dateStyle: "full",
-    });
-    return (
-        <div className="w-full border-t-2 border-blue-500 bg-white shadow-sm">
-            <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-2 sm:px-8">
-                <Link href="/" className="flex items-center gap-2">
-                    <Image
-                        src="/logo-icon.png"
-                        alt="বাজার দর লোগো"
-                        width={36}
-                        height={36}
-                        className="rounded-lg bg-green-700 p-1.5"
-                        priority
-                    />
-                    <div className="flex flex-col">
-                        <h2 className="text-base font-bold leading-5 text-gray-900">বাজার দর</h2>
-                        <p className="text-[9px] leading-4 text-gray-500">
-                            {date}
-                        </p>
-                    </div>
-                </Link>
-                {/* Authentication buttons */}
-                <div className="flex items-center gap-3">
-                    <Link
-                        href="/sign-in"
-                        className="whitespace-nowrap text-xs font-medium text-gray-800 hover:text-green-700"
-                    >
-                        সাইন ইন
-                    </Link>
-                    <Link
-                        href="/sign-up"
-                        className="whitespace-nowrap rounded-lg bg-green-700 px-3 py-1.5 text-xs font-semibold text-white shadow-sm transition hover:bg-green-800"
-                    >
-                        সাইন আপ
-                    </Link>
+import NavLinks from "./navlinks";
+import { getBanglaDate } from "@/lib/utils";
+
+export default function Navbar() {
+  const { data: session, isPending } = useSession();
+  const router = useRouter();
+
+  const handleSignOut = async () => {
+    try {
+      await authClient.signOut({
+        fetchOptions: {
+          onSuccess: () => {
+            toast.success("সাইন আউট সফল হয়েছে!");
+            router.push("/");
+          },
+        },
+      });
+    } catch (error) {
+      console.error("Sign out failed:", error);
+      toast.error("সাইন আউট করা যায়নি। আবার চেষ্টা করুন।");
+    }
+  };
+
+  return (
+    <header className="sticky top-0 z-50 bg-white shadow-sm">
+      {/* Top Row: Logo + Authentication */}
+      <div className="max-w-7xl mx-auto px-4 py-2 flex items-center justify-between">
+        {/* Logo */}
+        <Link href="/" className="flex items-center gap-2">
+          <span className="text-2xl">🛒</span>
+
+          <div>
+            <h1 className="text-xl font-bold text-green-700 leading-tight">
+              বাজার দর
+            </h1>
+
+            <p className="text-xs text-gray-500">
+              {getBanglaDate()}
+            </p>
+          </div>
+        </Link>
+
+        {/* Desktop Authentication */}
+        <div className="hidden lg:flex items-center gap-2">
+          {isPending ? (
+            <span className="loading loading-spinner loading-sm" />
+          ) : session ? (
+            <div className="dropdown dropdown-end">
+              <div
+                tabIndex={0}
+                role="button"
+                className="btn btn-ghost btn-sm gap-2"
+              >
+                <div className="avatar placeholder">
+                  <div className="bg-green-100 text-green-700 rounded-full w-8">
+                    <span className="text-sm">
+                      {session.user.name?.charAt(0) || "U"}
+                    </span>
+                  </div>
                 </div>
+
+                <span>{session.user.name}</span>
+
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-4 w-4"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+              </div>
+
+              <ul
+                tabIndex={0}
+                className="dropdown-content menu bg-white rounded-box shadow-lg z-[1] w-52 p-2"
+              >
+                <li>
+                  <Link href="/profile">
+                    <span>👤</span>
+                    আমার প্রোফাইল
+                  </Link>
+                </li>
+
+                <li>
+                  <button type="button" onClick={handleSignOut}>
+                    <span>🚪</span>
+                    সাইন আউট
+                  </button>
+                </li>
+              </ul>
             </div>
-             {/* Category navigation */}
-            <Suspense fallback={<div className="h-9 border-t border-gray-100">Loading...</div>}>
-                <NavLinks />
-            </Suspense>
+          ) : (
+            <>
+              <Link
+                href="/signin"
+                className="btn btn-sm btn-outline btn-success"
+              >
+                সাইন ইন
+              </Link>
 
-
+              <Link
+                href="/signup"
+                className="btn btn-sm btn-success text-white"
+              >
+                সাইন আপ
+              </Link>
+            </>
+          )}
         </div>
-    );
-};
+      </div>
 
-export default Navbar;
+      {/* Category Links + Mobile Menu */}
+      <NavLinks
+        isAuthenticated={!!session}
+        onSignOut={handleSignOut}
+      />
+
+    </header>
+  );
+}
