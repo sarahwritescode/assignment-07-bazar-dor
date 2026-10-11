@@ -33,8 +33,7 @@ const SignUp = () => {
             window.alert("পাসওয়ার্ড দুটি মিলছে না");
             return;
         }
-        const { data: signUpData, error } = await signUp.social({
-           provider: "google",
+        const { data: signUpData, error } = await signUp.email({
             name: data.name,
             email: data.email,
             password: data.password,
@@ -43,6 +42,9 @@ const SignUp = () => {
         });
 
         router.push("/");
+            if (error) {
+        console.error("Sign up failed:", error);
+    }
     };
 
     return (
